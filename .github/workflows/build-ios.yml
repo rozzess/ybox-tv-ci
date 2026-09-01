@@ -1,0 +1,80 @@
+name: Build iOS IPAs
+
+# macOS runners bill private-repo minutes at 10x — keep this workflow lean:
+# one job for both apps (no duplicated runner setup), caches for Flutter,
+# pub and CocoaPods (MobileVLCKit is a ~500 MB pod), and a paths filter so
+# doc-only commits don't burn minutes.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "ybox_tv/**"
+      - "ybox_admin/**"
+      - ".github/workflows/build-ios.yml"
+
+jobs:
+  build-ipas:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.5
+          cache: true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ybox_tv/ios/Pods
+            ybox_admin/ios/Pods
+          key: pods-${{ runner.os }}-${{ hashFiles('ybox_tv/pubspec.lock', 'ybox_admin/pubspec.lock') }}
+          restore-keys: pods-${{ runner.os }}-
+
+      # Builtin Xtream credentials live in the BUILTIN_DEFINES repo secret
+      # (JSON for --dart-define-from-file), not in source. Without it the
+      # app still builds; devices get credentials from the admin's
+      # replaceBuiltin playlist doc on first sync.
+      - name: Write builtin credentials
+        env:
+          BUILTIN_DEFINES: ${{ secrets.BUILTIN_DEFINES }}
+        run: |
+          if [ -n "$BUILTIN_DEFINES" ]; then
+            printf '%s' "$BUILTIN_DEFINES" > ybox_tv/builtin.json
+          else
+            echo '{}' > ybox_tv/builtin.json
+          fi
+
+      - name: Build ybox_tv IPA
+        working-directory: ybox_tv
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign --dart-define-from-file=builtin.json
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -qry ybox_tv.ipa Payload
+
+      - name: Build ybox_admin IPA
+        working-directory: ybox_admin
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -qry ybox_admin.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ybox_tv-ipa
+          path: ybox_tv/build/ios/iphoneos/ybox_tv.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ybox_admin-ipa
+          path: ybox_admin/build/ios/iphoneos/ybox_admin.ipa

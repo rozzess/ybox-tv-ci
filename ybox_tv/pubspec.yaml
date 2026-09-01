@@ -1,0 +1,39 @@
+name: ybox_tv
+description: "YBOX TV — IPTV player"
+publish_to: "none"
+version: 2.4.6+21
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5
+  audio_session: ^0.1.21
+  http: ^1.2.0
+  shared_preferences: ^2.3.0
+  path_provider: ^2.1.0
+  file_picker: ^8.1.0
+  uuid: ^4.4.0
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
+  archive: ^4.2.0
+
+dependency_overrides:
+  # media_kit_video pulls volume_controller; 3.4.1–3.4.4 use the iOS
+  # scene-lifecycle API (needs Flutter >=3.38) without declaring it and break
+  # the CI build on Flutter 3.32. 3.4.0 is the last version that compiles.
+  volume_controller: 3.4.0
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon.png

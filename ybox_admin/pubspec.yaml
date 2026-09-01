@@ -1,0 +1,28 @@
+name: ybox_admin
+description: "YBOX Admin — fleet control"
+publish_to: 'none'
+version: 2.4.0+14
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.0
+  cloud_firestore: ^5.4.0
+  uuid: ^4.4.0
+  file_picker: ^8.1.0
+  just_audio: ^0.9.40
+  audio_session: ^0.1.21
+
+dev_dependencies:
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon_admin.png
+    - assets/silence.wav

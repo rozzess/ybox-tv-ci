@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "400327307442",
+    "project_id": "ybox-tv-ml82p",
+    "storage_bucket": "ybox-tv-ml82p.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400327307442:android:59fc411abf75aa1287d9ab",
+        "android_client_info": {
+          "package_name": "tv.ybox.ybox_tv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGscZ0RPxM1s3sqWdYYdUnVgvA83A8dGA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
